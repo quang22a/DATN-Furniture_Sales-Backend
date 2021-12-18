@@ -4,16 +4,16 @@ import { Admin } from "../models";
 import mongo from "mongoose";
 
 const login = async (req, res, next) => {
-  const { userName, password } = req.body;
+  const { username, password } = req.body;
   try {
-    const account = await Admin.findOne({ userName });
+    const account = await Admin.findOne({ username });
     if (!account)
       throw new HttpError("Tài khoản hoặc mật khẩu không chính xác", 400);
     const match = await bcrypt.compare(password, account.password);
     if (!match)
       throw new HttpError("Tài khoản hoặc mật khẩu không chính xác", 400);
     const data = {
-      userName,
+      username,
       _id: account._id,
       role: account.role,
     };
@@ -21,9 +21,9 @@ const login = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       msg: "Thành công",
-      token,
+      accessToken: token,
       role: account.role,
-      userName,
+      username,
     });
   } catch (error) {
     console.log(error);
@@ -32,15 +32,15 @@ const login = async (req, res, next) => {
 };
 
 const createMod = async (req, res, next) => {
-  let { userName, password } = req.body;
-  userName = userName.toLowerCase();
+  let { username, password } = req.body;
+  username = username.toLowerCase();
   try {
-    const mod = await Admin.findOne({ userName }, { password: 0 });
+    const mod = await Admin.findOne({ username }, { password: 0 });
     if (mod) throw new HttpError("username is exist", 400);
     const hash = await bcrypt.hash(password, 12);
     if (!hash) throw new HttpError("Fail", 400);
     await Admin.create({
-      userName,
+      username,
       password: hash,
       role: "moderator",
     });

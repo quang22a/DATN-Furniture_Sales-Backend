@@ -7,10 +7,6 @@ export default class CustomerService {
       { accountId: id },
       {
         __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        role: 0,
-        roleId: 0,
       }
     );
   }
@@ -19,10 +15,6 @@ export default class CustomerService {
       { _id },
       {
         __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        role: 0,
-        roleId: 0,
       }
     );
   }
@@ -33,8 +25,10 @@ export default class CustomerService {
     return true;
   }
 
-  async getCustomers(page, take) {
-    return await pagination(Customer, {}, page, take);
+  async getCustomers(page, take, search) {
+    const condition = {};
+    if (search) condition["name"] = new RegExp(search, "i");
+    return await pagination(Customer, condition, page, take);
   }
 
   async deleteCustomer(_id) {
@@ -45,5 +39,22 @@ export default class CustomerService {
       Account.findByIdAndDelete({ _id: customer.accountId }),
     ]);
     return true;
+  }
+
+  async updateCustomer(_id, data) {
+    const customer = await this.getCustomerById(_id);
+    if (!customer) return false;
+    await Promise.all([
+      Customer.findByIdAndUpdate({ _id }, data),
+      Account.findByIdAndUpdate(
+        { _id: customer.accountId },
+        { email: data.email, phone: data.phone }
+      ),
+    ]);
+    return true;
+  }
+
+  async registerSendEmail(accountId, receiveMail) {
+    return await Customer.findOneAndUpdate({ accountId }, { receiveMail });
   }
 }

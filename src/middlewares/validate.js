@@ -3,18 +3,22 @@ import { validateRequest } from "../utils";
 /* -------------------auth ----------------------------*/
 const registerStaffSchema = (req, res, next) => {
   const schema = Joi.object({
+    name: Joi.string().required(),
     password: Joi.string().alphanum().required().min(6).max(50),
     email: Joi.string().email().required(),
-    phone: Joi.number().required(),
+    address: Joi.string().required(),
+    phone: Joi.string().required(),
   });
   validateRequest(req, next, schema);
 };
 
 const registerCustomerSchema = (req, res, next) => {
   const schema = Joi.object({
+    name: Joi.string().required(),
     password: Joi.string().alphanum().required().min(6).max(50),
     email: Joi.string().email().required(),
-    phone: Joi.number().required(),
+    address: Joi.string().required(),
+    phone: Joi.string().required(),
   });
   validateRequest(req, next, schema);
 };
@@ -22,12 +26,10 @@ const registerCustomerSchema = (req, res, next) => {
 const updateInfoSchema = (req, res, next) => {
   const schema = Joi.object({
     name: Joi.string().required(),
-    address: Joi.string().empty(),
-    phone: Joi.string()
-      .empty()
-      .regex(/^(84|0[1-9])+([0-9]{8,20})$/)
-      .message(`phone incorrect format`),
-    image: Joi.string().empty(),
+    email: Joi.string().required(),
+    phone: Joi.string().required(),
+    address: Joi.string().required(),
+    isActive: Joi.boolean().empty(),
   });
   validateRequest(req, next, schema);
 };
@@ -67,7 +69,7 @@ const changeResetPass = (req, res, next) => {
 
 const loginAdminSchema = (req, res, next) => {
   const schema = Joi.object({
-    userName: Joi.string().required(),
+    username: Joi.string().required(),
     password: Joi.string().min(6).max(50).empty("").required(),
   });
   validateRequest(req, next, schema);
@@ -75,7 +77,7 @@ const loginAdminSchema = (req, res, next) => {
 
 const createModSchema = (req, res, next) => {
   const schema = Joi.object({
-    userName: Joi.string().required(),
+    username: Joi.string().required(),
     password: Joi.string().min(6).max(50).empty("").required(),
   });
   validateRequest(req, next, schema);
@@ -84,8 +86,8 @@ const createModSchema = (req, res, next) => {
 
 const createCategorySchema = (req, res, next) => {
   const schema = Joi.object({
-    title: Joi.string().required(),
     name: Joi.string().required(),
+    image: Joi.string(),
     isTrending: Joi.boolean(),
   });
   validateRequest(req, next, schema);
@@ -93,8 +95,8 @@ const createCategorySchema = (req, res, next) => {
 
 const updateCategorySchema = (req, res, next) => {
   const schema = Joi.object({
-    title: Joi.string().required(),
     name: Joi.string().required(),
+    image: Joi.string(),
     isTrending: Joi.boolean(),
   });
   validateRequest(req, next, schema);
@@ -103,8 +105,8 @@ const updateCategorySchema = (req, res, next) => {
 
 const createBrandSchema = (req, res, next) => {
   const schema = Joi.object({
-    title: Joi.string().required(),
     name: Joi.string().required(),
+    image: Joi.string(),
     isFeatured: Joi.boolean(),
   });
   validateRequest(req, next, schema);
@@ -112,8 +114,8 @@ const createBrandSchema = (req, res, next) => {
 
 const updateBrandSchema = (req, res, next) => {
   const schema = Joi.object({
-    title: Joi.string().required(),
     name: Joi.string().required(),
+    image: Joi.string(),
     isFeatured: Joi.boolean(),
   });
   validateRequest(req, next, schema);
@@ -127,27 +129,125 @@ const createProductSchema = (req, res, next) => {
     name: Joi.string().required(),
     rating: Joi.number(),
     numberOfReview: Joi.number(),
-    description: Joi.string().required(),
+    description: Joi.string().empty(),
     image: Joi.string().required(),
     isActive: Joi.boolean(),
     material: Joi.string().required(),
-    color: Joi.array().required(),
-    size: Joi.array().required(),
+    quantity: Joi.number().required(),
+    price: Joi.number().required(),
   });
   validateRequest(req, next, schema);
 };
 
 const updateProductSchema = (req, res, next) => {
   const schema = Joi.object({
-    // name: Joi.string().empty(),
-    // rating: Joi.number().empty(),
-    // numberOfReview: Joi.number().empty(),
-    // description: Joi.string().empty(),
-    // image: Joi.string().empty(),
-    // isActive: Joi.boolean().empty(),
-    // material: Joi.boolean().empty(),
-    // color: Joi.array().empty(),
-    // size: Joi.array().empty(),
+    brandId: Joi.string().required(),
+    categoryId: Joi.string().required(),
+    name: Joi.string().required(),
+    rating: Joi.number().empty(),
+    numberOfReview: Joi.number().empty(),
+    description: Joi.string().empty(),
+    image: Joi.string().required(),
+    isActive: Joi.boolean().required(),
+    material: Joi.string().required(),
+    quantity: Joi.number().required(),
+    price: Joi.number().required(),
+  });
+  validateRequest(req, next, schema);
+};
+/*-------------rating------------------- */
+
+const createRatingSchema = (req, res, next) => {
+  const schema = Joi.object({
+    customerId: Joi.string().required(),
+    productId: Joi.string().required(),
+    rating: Joi.number().required(),
+    comment: Joi.string().required(),
+    customerInfo: Joi.object().required(),
+  });
+  validateRequest(req, next, schema);
+};
+
+const updateRatingSchema = (req, res, next) => {
+  const schema = Joi.object({
+    customerId: Joi.string().required(),
+    productId: Joi.string().required(),
+    rating: Joi.number().required(),
+    comment: Joi.string().required(),
+    customerInfo: Joi.object().required(),
+  });
+  validateRequest(req, next, schema);
+};
+/*-------------bill------------------- */
+
+const createBillSchema = (req, res, next) => {
+  const schema = Joi.object({
+    customer: Joi.object().required(),
+    name: Joi.string().required(),
+    email: Joi.string().required(),
+    phone: Joi.string().required(),
+    address: Joi.string().required(),
+    totalPrice: Joi.number().required(),
+    totalProduct: Joi.number().required(),
+    paymentMethod: Joi.string().required(),
+    paymentStatus: Joi.boolean().required(),
+    additional: Joi.string().empty(),
+    listProducts: Joi.array().required(),
+  });
+  validateRequest(req, next, schema);
+};
+
+const updateBillSchema = (req, res, next) => {
+  const schema = Joi.object({
+    customer: Joi.object().required(),
+    name: Joi.string().required(),
+    email: Joi.string().required(),
+    phone: Joi.string().required(),
+    address: Joi.string().required(),
+    totalPrice: Joi.number().required(),
+    totalProduct: Joi.number().required(),
+    paymentMethod: Joi.string().required(),
+    paymentStatus: Joi.boolean().required(),
+    status: Joi.boolean().required(),
+    additional: Joi.string().empty(),
+  });
+  validateRequest(req, next, schema);
+};
+/*-------------notification------------------- */
+
+const createNotificationSchema = (req, res, next) => {
+  const schema = Joi.object({
+    content: Joi.string().required(),
+    image: Joi.string().required(),
+    title: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
+};
+
+const updateNotificationSchema = (req, res, next) => {
+  const schema = Joi.object({
+    content: Joi.string().required(),
+    image: Joi.string().required(),
+    title: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
+};
+/*-------------contact------------------- */
+
+const createContactSchema = (req, res, next) => {
+  const schema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().required(),
+    phone: Joi.string().required(),
+    msg: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
+};
+
+const updateContactSchema = (req, res, next) => {
+  console.log("Abc");
+  const schema = Joi.object({
+    status: Joi.boolean().required(),
   });
   validateRequest(req, next, schema);
 };
@@ -168,4 +268,12 @@ export const validateRequestBody = {
   updateBrandSchema,
   createProductSchema,
   updateProductSchema,
+  createRatingSchema,
+  updateRatingSchema,
+  createBillSchema,
+  updateBillSchema,
+  createNotificationSchema,
+  updateNotificationSchema,
+  createContactSchema,
+  updateContactSchema,
 };

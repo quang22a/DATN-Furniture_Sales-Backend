@@ -7,10 +7,6 @@ export default class StaffService {
       { accountId: id },
       {
         __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        role: 0,
-        roleId: 0,
       }
     );
   }
@@ -19,22 +15,26 @@ export default class StaffService {
       { _id },
       {
         __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        role: 0,
-        roleId: 0,
       }
     );
   }
 
   async update(_id, data) {
     if (!(await this.getStaff(_id))) return false;
-    await Staff.findOneAndUpdate({ accountId: _id }, data);
+    await Promise.all([
+      Staff.findOneAndUpdate({ accountId: _id }, data),
+      Account.findByIdAndUpdate(
+        { _id },
+        { email: data.email, phone: data.phone }
+      ),
+    ]);
     return true;
   }
 
-  async getStaffs(page, take) {
-    return await pagination(Staff, {}, page, take);
+  async getStaffs(page, take, search) {
+    const condition = {};
+    if (search) condition["name"] = new RegExp(search, "i");
+    return await pagination(Staff, condition, page, take);
   }
 
   async deleteStaff(_id) {
@@ -43,6 +43,19 @@ export default class StaffService {
     await Promise.all([
       Staff.findByIdAndDelete({ _id }),
       Account.findByIdAndDelete({ _id: staff.accountId }),
+    ]);
+    return true;
+  }
+
+  async updateStaff(_id, data) {
+    const staff = await this.getStaffById(_id);
+    if (!staff) return false;
+    await Promise.all([
+      Staff.findByIdAndUpdate({ _id }, data),
+      Account.findByIdAndUpdate(
+        { _id: staff.accountId },
+        { email: data.email, phone: data.phone }
+      ),
     ]);
     return true;
   }

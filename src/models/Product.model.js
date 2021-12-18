@@ -26,7 +26,6 @@ const ProductSchema = new Schema(
     },
     description: {
       type: String,
-      require: true,
     },
     image: {
       type: String,
@@ -40,16 +39,18 @@ const ProductSchema = new Schema(
       type: String,
       require: true,
     },
-    color: {
-      type: [String],
-      require: true,
+    quantity: {
+      type: Number,
+      required: true,
     },
-    size: {
-      type: [String],
-      require: true,
+    price: {
+      type: Number,
+      required: true,
     },
   },
   { timestamps: true }
 );
-
+ProductSchema.index({
+  name: "text",
+});
 export const Product = model("product", ProductSchema, "product");

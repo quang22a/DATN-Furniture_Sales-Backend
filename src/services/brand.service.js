@@ -10,8 +10,6 @@ export default class BrandService {
       { _id },
       {
         __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
       }
     );
   }
@@ -22,8 +20,14 @@ export default class BrandService {
     return true;
   }
 
-  async getBrands(page, take) {
-    return await pagination(Brand, {}, page, take);
+  async getBrands() {
+    return await Brand.find();
+  }
+
+  async getBrandsAdmin(page, take, search) {
+    const condition = {};
+    if (search) condition["name"] = new RegExp(search, "i");
+    return await pagination(Brand, condition, page, take);
   }
 
   async getBrandsFeatured() {

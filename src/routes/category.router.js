@@ -12,6 +12,10 @@ categoryRouter
   .get(categoryController.getCategories);
 
 categoryRouter
+  .route("/api/v1/categories-admin")
+  .get(categoryController.getCategoriesAdmin);
+
+categoryRouter
   .route("/api/v1/categories-trending")
   .get(categoryController.getCategoriesTrending);
 

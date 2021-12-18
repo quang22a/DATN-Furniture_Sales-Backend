@@ -10,10 +10,6 @@ export default class CategoryService {
       { _id },
       {
         __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        role: 0,
-        roleId: 0,
       }
     );
   }
@@ -24,8 +20,14 @@ export default class CategoryService {
     return true;
   }
 
-  async getCategories(page, take) {
-    return await pagination(Category, {}, page, take);
+  async getCategories() {
+    return await Category.find();
+  }
+
+  async getCategoriesAdmin(page, take, search) {
+    const condition = {};
+    if (search) condition["name"] = new RegExp(search, "i");
+    return await pagination(Category, condition, page, take);
   }
 
   async getCategoriesTrending() {

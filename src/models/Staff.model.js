@@ -14,24 +14,15 @@ const StaffSchema = new Schema(
     email: {
       type: String,
     },
-    image: {
-      type: String,
-    },
     phone: {
-      type: String,
-    },
-    gender: {
       type: String,
     },
     address: {
       type: String,
     },
-    birthday: {
-      type: String,
-    },
-    receiveMail: {
+    isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   { timestamps: true }

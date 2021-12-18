@@ -3,6 +3,7 @@ import { validateRequest } from "./validate";
 import { tokenEncode, verifyToken } from "./token";
 import { pagination } from "./pagination";
 import { initAccountAmin } from "./seed";
+import { sendEmail, generate } from "./sendMail";
 
 export {
   HttpError,
@@ -11,4 +12,6 @@ export {
   verifyToken,
   pagination,
   initAccountAmin,
+  sendEmail,
+  generate,
 };

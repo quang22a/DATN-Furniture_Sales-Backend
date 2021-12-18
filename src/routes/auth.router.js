@@ -22,7 +22,7 @@ authRouter
 
 authRouter
   .route("/api/v1/auth/update-password")
-  .post(
+  .put(
     jwtMidleware,
     validateRequestBody.updatePassSchema,
     authController.updatePassword
@@ -34,8 +34,24 @@ authRouter
 
 authRouter
   .route("/api/v1/auth/profile")
-  .patch(
+  .put(
     jwtMidleware,
     validateRequestBody.updateInfoSchema,
     authController.updateProfile
+  );
+
+authRouter
+  .route("/api/v1/auth/reset-password")
+  .post(
+    validateRequestBody.requestResetPass,
+    authController.requestResetPassword
+  );
+
+authRouter.route("/api/v1/auth/confirm-code").post(authController.confirmCode);
+
+authRouter
+  .route("/api/v1/auth/change-password")
+  .post(
+    validateRequestBody.changeResetPass,
+    authController.changePasswordReset
   );

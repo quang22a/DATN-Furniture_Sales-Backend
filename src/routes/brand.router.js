@@ -8,9 +8,13 @@ const { jwtMidleware } = authMiddleware;
 export const brandRouter = Router();
 
 brandRouter.route("/api/v1/brands").get(brandController.getBrands);
+
+brandRouter.route("/api/v1/brands-admin").get(brandController.getBrandsAdmin);
+
 brandRouter
   .route("/api/v1/brands-featured")
   .get(brandController.getBrandsFeatured);
+
 brandRouter.route("/api/v1/brands/:brandId").get(brandController.getBrand);
 
 brandRouter

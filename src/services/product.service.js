@@ -10,12 +10,12 @@ export default class ProductService {
       { _id },
       {
         __v: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        role: 0,
-        roleId: 0,
       }
     );
+  }
+
+  async getProductByCategory(categoryId) {
+    return await Product.find({ categoryId: categoryId });
   }
 
   async update(_id, data) {
@@ -24,8 +24,31 @@ export default class ProductService {
     return true;
   }
 
-  async getProducts(page, take) {
-    return await pagination(Product, {}, page, take);
+  async getProducts(category, brand, sortPrice, page, take, status, search) {
+    const condition = {};
+    if (category) {
+      condition["categoryId"] = category;
+    }
+    if (brand) {
+      condition["brandId"] = brand;
+    }
+    if (status) {
+      condition["isActive"] = status;
+    }
+    if (search) {
+      condition["name"] = new RegExp(search, "i");
+    }
+
+    const sort = sortPrice ? { price: sortPrice === "asc" ? 1 : -1 } : {};
+    return await pagination(Product, { ...condition }, page, take, {}, sort);
+  }
+
+  async getProductsAdmin() {
+    return await Product.find().sort({ updatedAt: -1 });
+  }
+
+  async getProductsNew() {
+    return await Product.find().sort({ createdAt: -1 }).limit(8);
   }
 
   async deleteProduct(_id) {

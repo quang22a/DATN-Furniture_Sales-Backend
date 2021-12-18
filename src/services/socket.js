@@ -1,30 +1,30 @@
-// import { verifyToken } from '../utils';
-// import { NotificationService } from '../services';
-// const notificationService = new NotificationService();
+import { verifyToken } from "../utils";
+import { NotificationService, BillService } from "../services";
+import { Bill } from "../models";
 
-// export const socketServer = (io) => {
-// 	io.on('connection', (socket) => {
-// 		const token = socket.handshake.query.token;
-// 		if (!token || token == 'null' || token == '' || token == null || token == undefined) {
-// 			console.log('token invalid:', token);
-// 		} else {
-// 			let decodedToken;
-// 			try {
-// 				decodedToken = verifyToken(token);
-// 				socket.userId = decodedToken._id;
-// 			} catch (error) {
-// 				io.emit(socket.id, 'token-invalid');
-// 				return;
-// 			}
+const notificationService = new NotificationService();
+const billService = new BillService();
 
-// 			socket.on('client-get-notifications', async () => {
-// 				const notifications = await notificationService.getNotifications(socket.userId);
-// 				io.to(socket.id).emit('server-send-notifications', notifications);
-// 			});
+export const socketServer = (io) => {
+  io.on("connection", (socket) => {
+    socket.on("client-get-notifications", async (data) => {
+      if (data) {
+        await notificationService.createNotification(data);
+      }
+      const notifications = await notificationService.getNotifications();
+      io.emit("server-send-notifications", notifications);
+    });
 
-// 			io.on('disconnect', (reason) => {
-// 				console.log('disconnected', reason);
-// 			});
-// 		}
-// 	});
-// };
+    socket.on("client-create-bill", async (data) => {
+      if (data) {
+        await billService.createBill(data);
+      }
+      const countBillNew = await Bill.countDocuments({ status: false });
+      io.emit("server-notification-new-bill", countBillNew);
+    });
+
+    io.on("disconnect", (reason) => {
+      console.log("disconnected", reason);
+    });
+  });
+};

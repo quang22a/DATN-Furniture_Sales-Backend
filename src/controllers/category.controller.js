@@ -20,9 +20,24 @@ const createCategory = async (req, res, next) => {
 };
 
 const getCategories = async (req, res, next) => {
-  const { page, take } = req.query;
   try {
-    const data = await categoryService.getCategories(page, take);
+    const data = await categoryService.getCategories();
+    if (!data) throw new HttpError("Lỗi", 400);
+    res.status(200).json({
+      status: 200,
+      msg: "Thành công",
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+const getCategoriesAdmin = async (req, res, next) => {
+  const { page, take, search } = req.query;
+  try {
+    const data = await categoryService.getCategoriesAdmin(page, take, search);
     if (!data) throw new HttpError("Lỗi", 400);
     res.status(200).json({
       status: 200,
@@ -106,6 +121,7 @@ export const categoryController = {
   createCategory,
   getCategory,
   getCategories,
+  getCategoriesAdmin,
   updateCategory,
   deleteCategory,
   getCategoriesTrending,

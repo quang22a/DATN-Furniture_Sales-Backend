@@ -20,9 +20,24 @@ const createBrand = async (req, res, next) => {
 };
 
 const getBrands = async (req, res, next) => {
-  const { page, take } = req.query;
   try {
-    const data = await brandService.getBrands(page, take);
+    const data = await brandService.getBrands();
+    if (!data) throw new HttpError("Lỗi", 400);
+    res.status(200).json({
+      status: 200,
+      msg: "Thành công",
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+const getBrandsAdmin = async (req, res, next) => {
+  const { page, take, search } = req.query;
+  try {
+    const data = await brandService.getBrandsAdmin(page, take, search);
     if (!data) throw new HttpError("Lỗi", 400);
     res.status(200).json({
       status: 200,
@@ -106,6 +121,7 @@ export const brandController = {
   createBrand,
   getBrand,
   getBrands,
+  getBrandsAdmin,
   getBrandsFeatured,
   updateBrand,
   deleteBrand,

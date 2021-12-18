@@ -22,6 +22,7 @@ export default class AuthThenticationService {
         accountId: acc._id,
         email: data.email,
         phone: data.phone,
+        address: data.address,
       });
     if (role == "staff")
       await Staff.create({
@@ -29,6 +30,7 @@ export default class AuthThenticationService {
         accountId: acc._id,
         email: data.email,
         phone: data.phone,
+        address: data.address,
       });
   }
 

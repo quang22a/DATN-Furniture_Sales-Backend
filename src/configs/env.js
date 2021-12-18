@@ -11,6 +11,6 @@ export const envVariables = {
   api_secret: process.env.API_SECRET_CLOUD || "hpWWOxyc-cm_Egs5bqRF4UzPJf8",
   key_admin: "123QWE!@#",
   url_fe: "https://localhost:7000/",
-  gmail: "poppy99.dev@gmail.com",
-  pass: "namvippro23799@",
+  gmail: "quangtran331199@gmail.com",
+  pass: "Quangteo123",
 };

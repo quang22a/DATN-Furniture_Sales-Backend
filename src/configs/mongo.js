@@ -7,6 +7,11 @@ export const dbConnection = (uri) => {
       useUnifiedTopology: true,
       useFindAndModify: false,
     });
+    mongoose.set("debug", (collectionName, method, query, doc) => {
+      console.log(
+        `${collectionName}.${method} :: ${JSON.stringify({ query })}`
+      );
+    });
     const db = mongoose.connection;
     db.once("open", () => {
       log.info(`Connected to database`);

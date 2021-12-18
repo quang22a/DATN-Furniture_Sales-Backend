@@ -14,20 +14,15 @@ const CustomerSchema = new Schema(
     email: {
       type: String,
     },
-    image: {
-      type: String,
-    },
     phone: {
-      type: String,
-    },
-    gender: {
       type: String,
     },
     address: {
       type: String,
     },
-    birthday: {
-      type: String,
+    isActive: {
+      type: Boolean,
+      default: true,
     },
     receiveMail: {
       type: Boolean,

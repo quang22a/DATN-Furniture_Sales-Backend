@@ -6,7 +6,7 @@ import fs from "fs";
 
 export const initAccountAmin = async () => {
   try {
-    let admin = await Admin.findOne({ userName: "admin" });
+    let admin = await Admin.findOne({ username: "admin@gmail.com" });
     if (admin) {
       log.info("Account admin is already");
       return;
@@ -14,7 +14,7 @@ export const initAccountAmin = async () => {
     const password = "123456";
     const hash = await bcrypt.hash(password, 12);
     admin = await Admin.create({
-      userName: "admin",
+      username: "admin@gmail.com",
       password: hash,
       role: "admin",
     });

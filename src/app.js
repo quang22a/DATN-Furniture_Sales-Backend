@@ -9,9 +9,15 @@ import {
   brandRouter,
   categoryRouter,
   productRouter,
+  ratingRouter,
+  billRouter,
+  customerRouter,
+  staffRouter,
+  notificationRouter,
+  contactRouter,
 } from "./routes";
 
-// import { socketServer } from "./services";
+import { socketServer } from "./services";
 
 import { initAccountAmin } from "./utils";
 export let server;
@@ -27,12 +33,18 @@ const main = async () => {
   server.registerRouter(brandRouter);
   server.registerRouter(categoryRouter);
   server.registerRouter(productRouter);
+  server.registerRouter(ratingRouter);
+  server.registerRouter(billRouter);
+  server.registerRouter(customerRouter);
+  server.registerRouter(staffRouter);
+  server.registerRouter(notificationRouter);
+  server.registerRouter(contactRouter);
 
   // initial default role
   // initialRole();
   initAccountAmin();
   server.registerMiddleware(errorHandle);
 
-  // server.socketEventHandler(socketServer);
+  server.socketEventHandler(socketServer);
 };
 main();
