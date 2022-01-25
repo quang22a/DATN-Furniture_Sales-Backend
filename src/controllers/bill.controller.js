@@ -1,10 +1,11 @@
 import mongo from "mongoose";
 import { HttpError } from "../utils";
-import { BillService, ProductService } from "../services";
+import { BillService, ProductService, CustomerService } from "../services";
 import { Bill } from "../models";
 
 const billService = new BillService();
 const productService = new ProductService();
+const customerService = new CustomerService();
 
 const createBill = async (req, res, next) => {
   const data = req.body;
@@ -92,6 +93,22 @@ const updateBill = async (req, res, nex) => {
   }
 };
 
+const getBillOfUser = async (req, res, next) => {
+  const { _id } = req.user;
+  try {
+    const user = await customerService.getCustomer(_id);
+    if (!user) throw new HttpError("user not found", 400);
+    const data = await billService.getBillOfUser(_id);
+    res.status(200).json({
+      status: 200,
+      msg: "Success",
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getRevenue = async (req, res, next) => {
   const { year } = req.query;
   try {
@@ -150,4 +167,5 @@ export const billController = {
   updateBill,
   getRevenue,
   deleteBill,
+  getBillOfUser,
 };

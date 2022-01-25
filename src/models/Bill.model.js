@@ -2,16 +2,10 @@ import { Schema, model } from "mongoose";
 
 const BillSchema = new Schema(
   {
-    customer: {
-      _id: {
-        type: Schema.Types.ObjectId,
-        ref: "customer",
-        required: true,
-      },
-      name: {
-        type: String,
-        required: true,
-      },
+    customerId: {
+      type: Schema.Types.ObjectId,
+      ref: "customer",
+      required: true,
     },
     name: {
       type: String,
@@ -42,8 +36,9 @@ const BillSchema = new Schema(
       required: true,
     },
     status: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["new", "shipping", "done"],
+      default: "new",
     },
     totalProduct: {
       type: Number,

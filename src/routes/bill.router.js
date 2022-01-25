@@ -24,6 +24,10 @@ billRouter
   .get(jwtMidleware, billController.getProductOfBill);
 
 billRouter
+  .route("/api/v1/bill-user")
+  .get(jwtMidleware, billController.getBillOfUser);
+
+billRouter
   .route("/api/v1/bills/:id")
   .put(
     jwtMidleware,

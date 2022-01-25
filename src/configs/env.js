@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 export const envVariables = {
-  port: process.env.PORT || 5000,
+  port: process.env.PORT || 8000,
   mongoURI: process.env.DB_URI || "mongodb://127.0.0.1:27017/furniture",
   jwtSecret: process.env.JWT_SECRET || "123QWE!@#",
   nodeEnv: process.env.NODE_ENV || "development",

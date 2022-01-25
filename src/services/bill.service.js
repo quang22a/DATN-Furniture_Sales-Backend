@@ -1,12 +1,12 @@
 import mongo from "mongoose";
 
-import { Bill, Billproduct } from "../models";
+import { Bill, Billproduct, Product } from "../models";
 import { pagination } from "../utils";
 
 export default class BillService {
   async createBill(data) {
     const {
-      customer,
+      customerId,
       name,
       email,
       phone,
@@ -20,7 +20,7 @@ export default class BillService {
       listProducts,
     } = data;
     const bill = await Bill.create({
-      customer,
+      customerId,
       name,
       email,
       phone,
@@ -40,15 +40,6 @@ export default class BillService {
     });
     await Billproduct.insertMany(listProductsWithBillId);
     return true;
-  }
-
-  async getBillOfCustomer(customerId) {
-    return await Bill.findOne(
-      { _id },
-      {
-        __v: 0,
-      }
-    );
   }
 
   async getProductOfBill(billId) {
@@ -90,6 +81,44 @@ export default class BillService {
 
   async getBill(billId) {
     return await Bill.findOne({ _id: billId });
+  }
+
+  async getBillOfUser(id) {
+    // let listBill = await Bill.find({ customerId: id });
+    const listBill = await Bill.aggregate([
+      {
+        $match: {
+          customerId: mongo.Types.ObjectId(id),
+        },
+      },
+      {
+        $project: {
+          __v: 0,
+          "product.__v": 0,
+        },
+      },
+    ]).sort({ updatedAt: -1 });
+    let data = [];
+    for (let item of listBill) {
+      const listProduct = await Billproduct.aggregate([
+        {
+          $match: {
+            billId: mongo.Types.ObjectId(item._id),
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+            "product.__v": 0,
+          },
+        },
+      ]).sort({ createdAt: -1 });
+      data.push({
+        ...item,
+        listProduct,
+      });
+    }
+    return data;
   }
 
   async deleteBill(_id) {

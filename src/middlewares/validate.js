@@ -182,7 +182,7 @@ const updateRatingSchema = (req, res, next) => {
 
 const createBillSchema = (req, res, next) => {
   const schema = Joi.object({
-    customer: Joi.object().required(),
+    customerId: Joi.string().required(),
     name: Joi.string().required(),
     email: Joi.string().required(),
     phone: Joi.string().required(),
@@ -199,7 +199,7 @@ const createBillSchema = (req, res, next) => {
 
 const updateBillSchema = (req, res, next) => {
   const schema = Joi.object({
-    customer: Joi.object().required(),
+    customerId: Joi.string().required(),
     name: Joi.string().required(),
     email: Joi.string().required(),
     phone: Joi.string().required(),
@@ -208,7 +208,7 @@ const updateBillSchema = (req, res, next) => {
     totalProduct: Joi.number().required(),
     paymentMethod: Joi.string().required(),
     paymentStatus: Joi.boolean().required(),
-    status: Joi.boolean().required(),
+    status: Joi.string().required(),
     additional: Joi.string().empty(),
   });
   validateRequest(req, next, schema);
