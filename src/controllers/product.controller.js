@@ -30,10 +30,6 @@ const createProduct = async (req, res, next) => {
 
 const getProducts = async (req, res, next) => {
   const { category, brand, sortPrice, page, take, status, search } = req.query;
-  // request.get("http://127.0.0.1:5000/rs").end(function (err, resp) {
-  //   console.log("123123: ", resp._body.data);
-  // res.send(resp);
-  // });
   try {
     const data = await productService.getProducts(
       category,
