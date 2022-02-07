@@ -111,6 +111,7 @@ const getBillOfUser = async (req, res, next) => {
 
 const getRevenue = async (req, res, next) => {
   const { year } = req.query;
+  console.log(year)
   try {
     const date = new Date();
     let month;

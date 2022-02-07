@@ -2,7 +2,9 @@ require("dotenv").config();
 
 export const envVariables = {
   port: process.env.PORT || 8000,
-  mongoURI: process.env.DB_URI || "mongodb://127.0.0.1:27017/furniture",
+  mongoURI:
+    process.env.DB_URI ||
+    "mongodb+srv://admin:quang123@cluster0.1boie.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
   jwtSecret: process.env.JWT_SECRET || "123QWE!@#",
   nodeEnv: process.env.NODE_ENV || "development",
   subject: process.env.SUBJECT || "CODE RESET PASSWORD",

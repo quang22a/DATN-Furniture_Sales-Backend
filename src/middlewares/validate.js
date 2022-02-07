@@ -135,6 +135,7 @@ const createProductSchema = (req, res, next) => {
     material: Joi.string().required(),
     quantity: Joi.number().required(),
     price: Joi.number().required(),
+    discount: Joi.number().required(),
   });
   validateRequest(req, next, schema);
 };
@@ -152,6 +153,7 @@ const updateProductSchema = (req, res, next) => {
     material: Joi.string().required(),
     quantity: Joi.number().required(),
     price: Joi.number().required(),
+    discount: Joi.number().required(),
   });
   validateRequest(req, next, schema);
 };
