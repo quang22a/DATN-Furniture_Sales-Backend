@@ -1,9 +1,13 @@
-import { Product } from "../models";
+import { Product, IdProductLastest } from "../models";
 import { pagination } from "../utils";
 
 export default class ProductService {
   async create(data) {
-    return await Product.create(data);
+    const lastIds = await IdProductLastest.find();
+    const createId = lastIds && lastIds.length > 0 ? lastIds[0].idRating + 1 : 1;
+    await Promise.all([Product.create({...data, idRating: createId}), IdProductLastest.deleteMany({}), IdProductLastest.create({idRating: createId})]);
+    return true;
+    // return await Product.create(data);
   }
   async getProduct(_id) {
     return await Product.findOne(
@@ -25,6 +29,8 @@ export default class ProductService {
   }
 
   async getProducts(category, brand, sortPrice, page, take, status, search) {
+    const lastIds = await IdProductLastest.find();
+    console.log('123: ', lastIds[0]);
     const condition = {};
     if (category) {
       condition["categoryId"] = category;
@@ -44,6 +50,8 @@ export default class ProductService {
   }
 
   async getProductsAdmin() {
+    const lastIds = await IdProductLastest.find();
+    console.log('123: ', lastIds[0]);
     return await Product.find().sort({ updatedAt: -1 });
   }
 

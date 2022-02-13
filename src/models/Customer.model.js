@@ -28,6 +28,10 @@ const CustomerSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    idRating: {
+      type: Number,
+      required: true,
+    }
   },
   { timestamps: true }
 );

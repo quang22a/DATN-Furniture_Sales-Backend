@@ -9,6 +9,8 @@ export const productRouter = Router();
 
 productRouter.route("/api/v1/products").get(productController.getProducts);
 
+productRouter.route("/api/v1/products-rs").get(jwtMidleware, productController.getProductsRS);
+
 productRouter
   .route("/api/v1/products-count")
   .get(productController.countProduct);

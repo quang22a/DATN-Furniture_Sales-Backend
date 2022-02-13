@@ -11,6 +11,8 @@ import { Billproduct } from "./Billproduct.model";
 import { Code } from "./Code.model";
 import { Notification } from "./Notification.model";
 import { Contact } from "./Contact.model";
+import { IdProductLastest } from "./IdProductLastest.model";
+import { IdCustomerLastest } from "./IdCustomerLastest.model";
 
 export {
   Admin,
@@ -26,4 +28,6 @@ export {
   Code,
   Notification,
   Contact,
+  IdProductLastest,
+  IdCustomerLastest,
 };

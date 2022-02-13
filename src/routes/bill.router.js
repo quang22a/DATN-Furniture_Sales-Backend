@@ -42,3 +42,7 @@ billRouter
 billRouter
   .route("/api/v1/revenues")
   .get(jwtMidleware, billController.getRevenue);
+
+billRouter
+  .route("/api/v1/revenues-table")
+  .get(billController.getBillOfMonth);

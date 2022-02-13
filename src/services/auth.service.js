@@ -1,4 +1,4 @@
-import { Staff, Customer, Account } from "../models";
+import { Staff, Customer, Account, IdCustomerLastest } from "../models";
 import bcrypt from "bcryptjs";
 
 export default class AuthThenticationService {
@@ -16,14 +16,20 @@ export default class AuthThenticationService {
       password: hash,
       role,
     });
-    if (role == "customer")
+    if (role == "customer") {
+      const lastIds = await IdCustomerLastest.find();
+      const createId = lastIds && lastIds.length > 0 ? lastIds[0].idRating + 1 : 1;
       await Customer.create({
         name: data.name,
         accountId: acc._id,
         email: data.email,
         phone: data.phone,
         address: data.address,
+        idRating: createId,
       });
+      await IdCustomerLastest.deleteMany({});
+      await IdCustomerLastest.create({idRating: createId});
+    }
     if (role == "staff")
       await Staff.create({
         name: data.name,

@@ -109,6 +109,21 @@ const getBillOfUser = async (req, res, next) => {
   }
 };
 
+const getBillOfMonth  = async (req, res, next) => {
+  const { month, year, page } = req.query;
+  try {
+    const data = await billService.getBillOfMonth(month, year, page);
+    res.status(200).json({
+      status: 200,
+      msg: "Success",
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+}
+
 const getRevenue = async (req, res, next) => {
   const { year } = req.query;
   console.log(year)
@@ -120,19 +135,21 @@ const getRevenue = async (req, res, next) => {
     } else {
       month = date.getMonth();
     }
-    console.log(month);
+    console.log('month: ', month);
     const listBillsOfYear = await Bill.find({
       updatedAt: {
-        $gte: new Date(year, 1, 1),
-        $lte: new Date(year, month + 1, 1),
+        $gte: new Date(year, 0, 1),
+        $lte: new Date(year, month, 1),
       },
-      status: true,
+      status: 'done',
     });
+    console.log('listBillsOfYear: ', listBillsOfYear)
     if (!listBillsOfYear) throw new HttpError("Lỗi", 401);
     const data = Array.from([...Array(month + 1)], (x) => 0);
     listBillsOfYear.map((item) => {
       data[item.updatedAt.getMonth()] += item.totalPrice;
     });
+    console.log('data: ', data);
     res.status(200).json({
       status: 200,
       msg: "Thành công",
@@ -169,4 +186,5 @@ export const billController = {
   getRevenue,
   deleteBill,
   getBillOfUser,
+  getBillOfMonth,
 };

@@ -166,6 +166,8 @@ const createRatingSchema = (req, res, next) => {
     rating: Joi.number().required(),
     comment: Joi.string().required(),
     customerInfo: Joi.object().required(),
+    customerIdRating: Joi.number().required(),
+    productIdRating: Joi.number().required(),
   });
   validateRequest(req, next, schema);
 };
@@ -177,6 +179,8 @@ const updateRatingSchema = (req, res, next) => {
     rating: Joi.number().required(),
     comment: Joi.string().required(),
     customerInfo: Joi.object().required(),
+    customerIdRating: Joi.number().required(),
+    productIdRating: Joi.number().required(),
   });
   validateRequest(req, next, schema);
 };

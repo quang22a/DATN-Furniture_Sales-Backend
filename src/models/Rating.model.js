@@ -26,6 +26,14 @@ const RatingSchema = new Schema(
       type: String,
       default: "",
     },
+    customerIdRating: {
+      type: Number,
+      require: true,
+    },
+    productIdRating: {
+      type: Number,
+      require: true,
+    },
   },
   { timestamps: true }
 );

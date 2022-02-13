@@ -1,12 +1,14 @@
 import mongo from "mongoose";
 import { HttpError } from "../utils";
-import { ProductService, BrandService, CategoryService } from "../services";
-import { Category, Product, Bill, Billproduct } from "../models";
+import { ProductService, BrandService, CategoryService, CustomerService } from "../services";
+import { Category, Product, Bill, Billproduct, Rating } from "../models";
 import request from "superagent";
+import axios from 'axios';
 
 const productService = new ProductService();
 const brandService = new BrandService();
 const categoryService = new CategoryService();
+const customerService = new CustomerService();
 
 const createProduct = async (req, res, next) => {
   const data = req.body;
@@ -66,6 +68,43 @@ const getProductsAdmin = async (req, res, next) => {
     next(error);
   }
 };
+
+const getProductsRS = async (req, res, next) => {
+  const { _id } = req.user;
+  console.log("abcdef: ", _id)
+  try {
+    // const _id = '62064e70113ac62ca0b43d1f';
+    if (_id) {
+      const user = await customerService.getCustomer(_id);
+      if (!user) throw new HttpError("user not found", 400);
+      const idRating = user.idRating;
+      const reqRs = [];
+      const listRating = await Rating.find();
+      listRating.map((item) => {
+        reqRs.push(new Array(item.customerIdRating, item.productIdRating, item.rating));
+      })   
+      // const resp = await axios.get(`http://127.0.0.1:5000/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
+      const resp = await axios.get(`https://datn-rs.herokuapp.com/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
+      console.log(resp.data);
+      const listProducts = await Product.find({idRating: { "$in": resp.data.data}});
+      console.log(listProducts);
+      res.status(200).json({
+        status: 200,
+        msg: "Thành công",
+        data: listProducts
+      })    
+    } else {
+      res.status(200).json({
+        status: 200,
+        msg: "Thành công",
+        data: []
+      })  
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+}
 
 const getProductsNew = async (req, res, next) => {
   try {
@@ -242,4 +281,5 @@ export const productController = {
   countProduct,
   countProductSale,
   getProductHot,
+  getProductsRS,
 };

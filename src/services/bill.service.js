@@ -1,4 +1,5 @@
 import mongo from "mongoose";
+import { checkout } from "superagent";
 
 import { Bill, Billproduct, Product } from "../models";
 import { pagination } from "../utils";
@@ -119,6 +120,62 @@ export default class BillService {
       });
     }
     return data;
+  }
+
+  async getBillOfMonth(month, year, page) {
+    const data = await Billproduct.aggregate([
+        {
+          $match: {
+            updatedAt: {
+              $gte: new Date(year, month, 1),
+              $lte: new Date(year, month + 1, 1),
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "product",
+            localField: "productId",
+            foreignField: "_id",
+            as: "product",
+          },
+        },
+        {
+          $lookup: {
+            from: "bill",
+            localField: "billId",
+            foreignField: "_id",
+            as: "bill",
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+            status: 0,
+            createdAt: 0,
+          },
+        },
+      ]).sort({ createdAt: -1 });
+      console.log(data.length)
+    const result = [];
+    data.map((item) => {
+      let index = 0;
+      const check = result.filter((item1, index1) => {
+        if (item1.productId.toString() === item.productId.toString()) {
+          index = index1;
+        }
+        return item1.productId.toString() === item.productId.toString();
+      })
+      // console.log(index, check)
+      if (check.length > 0) {
+        result[index].quantity += item.quantity;
+        result[index].price += item.price;
+        // console.log(result[index])
+      } else {
+        result.push(item);
+      }
+    })
+    return result;
   }
 
   async deleteBill(_id) {

@@ -49,8 +49,11 @@ const ProductSchema = new Schema(
     },
     discount: {
       type: Number,
-      default: 0
-    }
+    },
+    idRating: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );
