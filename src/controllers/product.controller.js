@@ -73,7 +73,6 @@ const getProductsRS = async (req, res, next) => {
   const { _id } = req.user;
   console.log("abcdef: ", _id)
   try {
-    // const _id = '62064e70113ac62ca0b43d1f';
     if (_id) {
       const user = await customerService.getCustomer(_id);
       if (!user) throw new HttpError("user not found", 400);
