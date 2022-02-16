@@ -71,7 +71,6 @@ const getProductsAdmin = async (req, res, next) => {
 
 const getProductsRS = async (req, res, next) => {
   const { _id } = req.user;
-  console.log("abcdef: ", _id)
   try {
     if (_id) {
       const user = await customerService.getCustomer(_id);
