@@ -4,12 +4,7 @@ const notificationService = new NotificationService();
 
 const notifications = async (req, res, next) => {
   try {
-    const { page, take } = req.query;
-    const data = await notificationService.getNotifications(
-      req.user._id,
-      page,
-      take
-    );
+    const data = await notificationService.getNotifications();
     res.status(200).json({
       status: 200,
       msg: "Success",
@@ -105,6 +100,20 @@ const update = async (req, res, next) => {
   }
 };
 
+const deleteNoti = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    await notificationService.delete(id);
+    res.status(200).json({
+      status: 200,
+      msg: "Success",
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 export const notificationController = {
   notifications,
   getListNotifications,
@@ -113,4 +122,5 @@ export const notificationController = {
   createNotification,
   getNotification,
   update,
+  deleteNoti
 };

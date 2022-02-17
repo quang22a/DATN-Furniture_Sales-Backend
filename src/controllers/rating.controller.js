@@ -17,10 +17,10 @@ const createRating = async (req, res, next) => {
     await ratingService.create(data);
     const ratingOfProduct = await Rating.find({ productId: data.productId });
     product.rating =
-      ratingOfProduct.reduce(
+      (ratingOfProduct.reduce(
         (accumulator, item) => accumulator + item.rating,
         0
-      ) / ratingOfProduct.length;
+      ) / ratingOfProduct.length).toFixed(1);
     await productService.update(product._id, product);
     res.status(200).json({
       status: 200,

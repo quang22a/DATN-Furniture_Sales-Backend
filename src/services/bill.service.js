@@ -122,10 +122,14 @@ export default class BillService {
     return data;
   }
 
-  async getBillOfMonth(month, year, page) {
+  async getBillOfMonth(listBill, month, year) {
+    console.log('abc : ', month, year)
+    const idBills = listBill.map((item) => item._id);
+    console.log(idBills);
     const data = await Billproduct.aggregate([
         {
           $match: {
+            billId: { "$in": idBills },
             updatedAt: {
               $gte: new Date(year, month, 1),
               $lte: new Date(year, month + 1, 1),
@@ -156,7 +160,6 @@ export default class BillService {
           },
         },
       ]).sort({ createdAt: -1 });
-      console.log(data.length)
     const result = [];
     data.map((item) => {
       let index = 0;
@@ -166,11 +169,9 @@ export default class BillService {
         }
         return item1.productId.toString() === item.productId.toString();
       })
-      // console.log(index, check)
       if (check.length > 0) {
         result[index].quantity += item.quantity;
         result[index].price += item.price;
-        // console.log(result[index])
       } else {
         result.push(item);
       }

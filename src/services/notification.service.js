@@ -3,7 +3,7 @@ import { pagination } from "../utils";
 
 export default class NotificationService {
   async getNotifications() {
-    return await Notification.find();
+    return await Notification.findOne().sort({ createdAt: -1 }).limit(1);
   }
 
   async getListNotifications(page, take) {
@@ -27,6 +27,10 @@ export default class NotificationService {
 
   async update(_id, data) {
     return Notification.findByIdAndUpdate({ _id }, data);
+  }
+
+  async delete(_id) {
+    return Notification.findByIdAndDelete({ _id });
   }
   // async getNumberOfNotifications(userId) {
   // 	const account = await Account.findById(userId);

@@ -110,9 +110,18 @@ const getBillOfUser = async (req, res, next) => {
 };
 
 const getBillOfMonth  = async (req, res, next) => {
-  const { month, year, page } = req.query;
+  const { month, year } = req.query;
   try {
-    const data = await billService.getBillOfMonth(month, year, page);
+    if (parseInt(year) === new Date().getFullYear() && parseInt(month) >= new Date().getMonth()) {
+      res.status(200).json({
+        status: 200,
+        msg: "Success",
+        data: [],
+      });
+      return;
+    }
+    const listBill = await Bill.find({status: 'done'});
+    const data = await billService.getBillOfMonth(listBill, month, year);
     res.status(200).json({
       status: 200,
       msg: "Success",

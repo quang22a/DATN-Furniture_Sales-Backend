@@ -34,3 +34,10 @@ notificationRouter
     validateRequestBody.updateNotificationSchema,
     notificationController.update
   );
+
+notificationRouter
+  .route("/api/v1/notifications/:id")
+  .delete(
+    jwtMidleware,
+    notificationController.deleteNoti
+  );

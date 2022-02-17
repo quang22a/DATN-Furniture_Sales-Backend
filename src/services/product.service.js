@@ -30,7 +30,6 @@ export default class ProductService {
 
   async getProducts(category, brand, sortPrice, page, take, status, search) {
     const lastIds = await IdProductLastest.find();
-    console.log('123: ', lastIds[0]);
     const condition = {};
     if (category) {
       condition["categoryId"] = category;
@@ -51,7 +50,6 @@ export default class ProductService {
 
   async getProductsAdmin() {
     const lastIds = await IdProductLastest.find();
-    console.log('123: ', lastIds[0]);
     return await Product.find().sort({ updatedAt: -1 });
   }
 
