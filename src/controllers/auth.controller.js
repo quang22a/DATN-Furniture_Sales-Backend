@@ -148,7 +148,6 @@ const profile = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   const { role, _id } = req.user;
-  console.log(role);
   let user = null;
   if (role == "customer") {
     user = await customerService.getCustomer(_id);

@@ -135,7 +135,6 @@ const getBillOfMonth  = async (req, res, next) => {
 
 const getRevenue = async (req, res, next) => {
   const { year } = req.query;
-  console.log(year)
   try {
     const date = new Date();
     let month;
@@ -144,7 +143,6 @@ const getRevenue = async (req, res, next) => {
     } else {
       month = date.getMonth();
     }
-    console.log('month: ', month);
     const listBillsOfYear = await Bill.find({
       updatedAt: {
         $gte: new Date(year, 0, 1),
@@ -152,13 +150,11 @@ const getRevenue = async (req, res, next) => {
       },
       status: 'done',
     });
-    console.log('listBillsOfYear: ', listBillsOfYear)
     if (!listBillsOfYear) throw new HttpError("Lỗi", 401);
     const data = Array.from([...Array(month + 1)], (x) => 0);
     listBillsOfYear.map((item) => {
       data[item.updatedAt.getMonth()] += item.totalPrice;
     });
-    console.log('data: ', data);
     res.status(200).json({
       status: 200,
       msg: "Thành công",

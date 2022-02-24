@@ -33,6 +33,10 @@ export default class BillService {
       status,
       additional,
     });
+    console.log('product: ', listProducts)
+    listProducts.map(async (item) => {
+      await Product.findOneAndUpdate({ _id: mongo.Types.ObjectId(item.productId) }, { $inc: { quantity: - item.quantity } });
+    });
     const listProductsWithBillId = listProducts.map((item) => {
       return {
         ...item,
@@ -123,9 +127,7 @@ export default class BillService {
   }
 
   async getBillOfMonth(listBill, month, year) {
-    console.log('abc : ', month, year)
     const idBills = listBill.map((item) => item._id);
-    console.log(idBills);
     const data = await Billproduct.aggregate([
         {
           $match: {

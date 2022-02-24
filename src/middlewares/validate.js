@@ -251,7 +251,6 @@ const createContactSchema = (req, res, next) => {
 };
 
 const updateContactSchema = (req, res, next) => {
-  console.log("Abc");
   const schema = Joi.object({
     status: Joi.boolean().required(),
   });

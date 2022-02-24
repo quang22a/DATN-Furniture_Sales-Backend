@@ -83,9 +83,7 @@ const getProductsRS = async (req, res, next) => {
       })   
       // const resp = await axios.get(`http://127.0.0.1:5000/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
       const resp = await axios.get(`https://datn-rs.herokuapp.com/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
-      console.log(resp.data);
       const listProducts = await Product.find({idRating: { "$in": resp.data.data}});
-      console.log(listProducts);
       res.status(200).json({
         status: 200,
         msg: "Thành công",

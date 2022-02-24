@@ -12,7 +12,6 @@ export const socketServer = (io) => {
         await billService.createBill(data);
       }
       const countBillNew = await Bill.countDocuments({ status: 'new' });
-      console.log("123: ", countBillNew);
       io.emit("server-notification-new-bill", countBillNew);
     });
 
