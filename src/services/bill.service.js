@@ -33,7 +33,6 @@ export default class BillService {
       status,
       additional,
     });
-    console.log('product: ', listProducts)
     listProducts.map(async (item) => {
       await Product.findOneAndUpdate({ _id: mongo.Types.ObjectId(item.productId) }, { $inc: { quantity: - item.quantity } });
     });

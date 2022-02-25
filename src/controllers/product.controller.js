@@ -75,20 +75,30 @@ const getProductsRS = async (req, res, next) => {
     if (_id) {
       const user = await customerService.getCustomer(_id);
       if (!user) throw new HttpError("user not found", 400);
-      const idRating = user.idRating;
-      const reqRs = [];
-      const listRating = await Rating.find();
-      listRating.map((item) => {
-        reqRs.push(new Array(item.customerIdRating, item.productIdRating, item.rating));
-      })   
-      // const resp = await axios.get(`http://127.0.0.1:5000/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
-      const resp = await axios.get(`https://datn-rs.herokuapp.com/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
-      const listProducts = await Product.find({idRating: { "$in": resp.data.data}});
+      const isUserRating = await Rating.find({ customerId: user._id });
+      if (isUserRating && isUserRating.length > 0) {
+        const idRating = user.idRating;
+        const reqRs = [];
+        const listRating = await Rating.find();
+        listRating.map((item) => {
+          reqRs.push(new Array(item.customerIdRating, item.productIdRating, item.rating));
+        })   
+        // const resp = await axios.get(`http://127.0.0.1:5000/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
+        const resp = await axios.get(`https://datn-rs.herokuapp.com/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
+        const listProducts = await Product.find({idRating: { "$in": resp.data.data}});
+        res.status(200).json({
+          status: 200,
+          msg: "Thành công",
+          data: listProducts
+        })
+        return;
+      }
+      const data = await Product.find({rating: { $gte: 3,},}).sort({ rating: -1 }).limit(5);
       res.status(200).json({
         status: 200,
         msg: "Thành công",
-        data: listProducts
-      })    
+        data: data
+      })
     } else {
       res.status(200).json({
         status: 200,

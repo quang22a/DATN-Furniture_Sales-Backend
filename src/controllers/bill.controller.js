@@ -98,7 +98,7 @@ const getBillOfUser = async (req, res, next) => {
   try {
     const user = await customerService.getCustomer(_id);
     if (!user) throw new HttpError("user not found", 400);
-    const data = await billService.getBillOfUser(_id);
+    const data = await billService.getBillOfUser(user._id);
     res.status(200).json({
       status: 200,
       msg: "Success",
