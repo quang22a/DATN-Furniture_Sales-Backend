@@ -1,4 +1,4 @@
-import { Product, IdProductLastest, Rating } from "../models";
+import { Product, IdProductLastest, Rating, Billproduct, Bill } from "../models";
 import { pagination } from "../utils";
 
 export default class ProductService {
@@ -62,8 +62,12 @@ export default class ProductService {
     if (!product) return false;
     await Promise.all([
       Product.findByIdAndDelete({ _id }), 
-      Rating.deleteMany({productId: _id})
+      Rating.deleteMany({productId: _id}),
     ]);
+    const bills = await Billproduct.find({productId: _id});
+    bills.map(async (item) => {
+      await Bill.findByIdAndDelete(item.billId);
+    })
     return true;
   }
 }
