@@ -1,4 +1,4 @@
-import { Brand, Product } from "../models";
+import { Brand, Product, Bill, Billproduct, Rating } from "../models";
 import { pagination } from "../utils";
 
 export default class BrandService {
@@ -37,10 +37,18 @@ export default class BrandService {
   async deleteBrand(_id) {
     const brand = await this.getBrand(_id);
     if (!brand) return false;
-    await Promise.all([
-      Brand.findByIdAndDelete({ _id }),
-      Product.deleteMany({ brandId: _id }),
-    ]);
+    await Brand.findByIdAndDelete({ _id });
+    const productBrand = await Product.find({ brandId: _id });
+    productBrand.map(async (item) => {
+      await Promise.all([
+        Product.findByIdAndDelete({ _id: item._id }), 
+        Rating.deleteMany({productId: item._id}),
+      ]);
+      const bills = await Billproduct.find({productId: item._id});
+      bills.map(async (item1) => {
+        await Bill.findByIdAndDelete(item1.billId);
+      })
+    })
     return true;
   }
 }

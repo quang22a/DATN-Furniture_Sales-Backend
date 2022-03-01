@@ -1,4 +1,4 @@
-import { Category, Product } from "../models";
+import { Category, Product, Rating, Bill, Billproduct } from "../models";
 import { pagination } from "../utils";
 
 export default class CategoryService {
@@ -37,10 +37,18 @@ export default class CategoryService {
   async deleteCategory(_id) {
     const category = await this.getCategory(_id);
     if (!category) return false;
-    await Promise.all([
-      Category.findByIdAndDelete({ _id }),
-      Product.deleteMany({ categoryId: _id }),
-    ]);
+    await Category.findByIdAndDelete({ _id });
+    const productCate = await Product.find({ categoryId: _id });
+    productCate.map(async (item) => {
+      await Promise.all([
+        Product.findByIdAndDelete({ _id: item._id }), 
+        Rating.deleteMany({productId: item._id}),
+      ]);
+      const bills = await Billproduct.find({productId: item._id});
+      bills.map(async (item1) => {
+        await Bill.findByIdAndDelete(item1.billId);
+      })
+    })
     return true;
   }
 }

@@ -32,16 +32,4 @@ export default class NotificationService {
   async delete(_id) {
     return Notification.findByIdAndDelete({ _id });
   }
-  // async getNumberOfNotifications(userId) {
-  // 	const account = await Account.findById(userId);
-  // 	if (!account) return 0;
-  // 	if (account.role == 'iter') {
-  // 		const iter = await ITer.findOne({ accountId: userId });
-  // 		return iter.numberOfNotifications;
-  // 	}
-  // 	if (account.role == 'company') {
-  // 		const company = await Company.findOne({ accountId: userId });
-  // 		return company.numberOfNotifications;
-  // 	}
-  // }
 }

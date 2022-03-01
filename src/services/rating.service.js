@@ -8,12 +8,19 @@ export default class RatingService {
     return await Rating.create(data);
   }
   async getRating(_id) {
-    return await Rating.findOne(
-      { _id },
+    return await Rating.aggregate([
       {
-        __v: 0,
-      }
-    );
+        $match: { _id },
+      },
+      {
+        $lookup: {
+          from: "customer",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+    ]);
   }
 
   async update(_id, data) {

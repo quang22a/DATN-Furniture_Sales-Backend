@@ -1,4 +1,4 @@
-import { Customer, Account } from "../models";
+import { Customer, Account, Rating, Bill, Billproduct } from "../models";
 import { pagination } from "../utils";
 
 export default class CustomerService {
@@ -37,7 +37,13 @@ export default class CustomerService {
     await Promise.all([
       Customer.findByIdAndDelete({ _id }),
       Account.findByIdAndDelete({ _id: customer.accountId }),
+      Rating.deleteMany({customerId: _id}),
     ]);
+    const bills = await Bill.find({customerId: _id});
+    bills.map(async (item) => {
+      await Bill.findByIdAndDelete({_id: item._id});
+      await Billproduct.deleteMany({billId: item._id});
+    })
     return true;
   }
 

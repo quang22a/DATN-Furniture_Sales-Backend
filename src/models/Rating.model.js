@@ -7,12 +7,6 @@ const RatingSchema = new Schema(
       ref: "customer",
       required: true,
     },
-    customerInfo: {
-      name: {
-        type: String,
-        required: true,
-      },
-    },
     productId: {
       type: Schema.Types.ObjectId,
       ref: "product",
