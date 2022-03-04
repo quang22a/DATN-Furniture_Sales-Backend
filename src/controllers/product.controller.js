@@ -132,7 +132,6 @@ const getProduct = async (req, res, next) => {
   try {
     const data = await productService.getProduct(productId);
     if (!data) throw new HttpError("Không tìm thấy sản phẩm", 400);
-    const category = await Category.findOne({ _id: data.categoryId });
     res.status(200).json({
       status: 200,
       msg: "Thành công",

@@ -125,16 +125,12 @@ export default class BillService {
     return data;
   }
 
-  async getBillOfMonth(listBill, month, year) {
+  async getBillFollowTime(listBill) {
     const idBills = listBill.map((item) => item._id);
     const data = await Billproduct.aggregate([
         {
           $match: {
             billId: { "$in": idBills },
-            updatedAt: {
-              $gte: new Date(year, month, 1),
-              $lte: new Date(year, month + 1, 1),
-            },
           },
         },
         {

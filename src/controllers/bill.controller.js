@@ -109,10 +109,12 @@ const getBillOfUser = async (req, res, next) => {
   }
 };
 
-const getBillOfMonth  = async (req, res, next) => {
-  const { month, year } = req.query;
+const getBillFollowTime  = async (req, res, next) => {
+  const { dateStart, dateEnd } = req.query;
+  const start = new Date(JSON.parse(dateStart));
+  const end = new Date(JSON.parse(dateEnd));
   try {
-    if (parseInt(year) === new Date().getFullYear() && parseInt(month) >= new Date().getMonth()) {
+    if (start.setHours(0, 0, 0, 0) > end.setHours(0, 0, 0, 0)) {
       res.status(200).json({
         status: 200,
         msg: "Success",
@@ -120,8 +122,13 @@ const getBillOfMonth  = async (req, res, next) => {
       });
       return;
     }
-    const listBill = await Bill.find({status: 'done'});
-    const data = await billService.getBillOfMonth(listBill, month, year);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+    const listBill = await Bill.find({status: 'done', updatedAt: {
+      $gte: start,
+      $lte: end,
+    },});
+    const data = await billService.getBillFollowTime(listBill);
     res.status(200).json({
       status: 200,
       msg: "Success",
@@ -191,5 +198,5 @@ export const billController = {
   getRevenue,
   deleteBill,
   getBillOfUser,
-  getBillOfMonth,
+  getBillFollowTime,
 };

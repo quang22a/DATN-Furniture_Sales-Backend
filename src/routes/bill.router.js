@@ -45,4 +45,4 @@ billRouter
 
 billRouter
   .route("/api/v1/revenues-table")
-  .get(billController.getBillOfMonth);
+  .get(billController.getBillFollowTime);
