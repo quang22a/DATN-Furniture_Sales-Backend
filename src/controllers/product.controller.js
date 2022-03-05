@@ -161,7 +161,6 @@ const deleteProduct = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
   const { productId } = req.params;
   const data = req.body;
-  console.log(data);
   try {
     if (!mongo.Types.ObjectId.isValid(productId))
       throw new HttpError("Không tìm thấy sản phẩm", 400);
