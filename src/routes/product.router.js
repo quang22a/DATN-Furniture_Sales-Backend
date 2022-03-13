@@ -9,8 +9,6 @@ export const productRouter = Router();
 
 productRouter.route("/api/v1/products").get(productController.getProducts);
 
-productRouter.route("/api/v1/products-rs").get(jwtMidleware, productController.getProductsRS);
-
 productRouter
   .route("/api/v1/products-count")
   .get(productController.countProduct);
@@ -18,10 +16,6 @@ productRouter
 productRouter
   .route("/api/v1/products-count-sale")
   .get(productController.countProductSale);
-
-productRouter
-  .route("/api/v1/products-hot")
-  .get(productController.getProductHot);
 
 productRouter
   .route("/api/v1/products-admin")

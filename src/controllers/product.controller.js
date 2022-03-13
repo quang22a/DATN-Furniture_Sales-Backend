@@ -69,49 +69,6 @@ const getProductsAdmin = async (req, res, next) => {
   }
 };
 
-const getProductsRS = async (req, res, next) => {
-  const { _id } = req.user;
-  try {
-    if (_id) {
-      const user = await customerService.getCustomer(_id);
-      if (!user) throw new HttpError("user not found", 400);
-      const isUserRating = await Rating.find({ customerId: user._id });
-      if (isUserRating && isUserRating.length > 0) {
-        const idRating = user.idRating;
-        const reqRs = [];
-        const listRating = await Rating.find();
-        listRating.map((item) => {
-          reqRs.push(new Array(item.customerIdRating, item.productIdRating, item.rating));
-        })   
-        // const resp = await axios.get(`http://127.0.0.1:5000/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
-        const resp = await axios.get(`https://datn-rs.herokuapp.com/rs?data=${JSON.stringify(reqRs)}&user=${idRating}`)
-        const listProducts = await Product.find({idRating: { "$in": resp.data.data}});
-        res.status(200).json({
-          status: 200,
-          msg: "Thành công",
-          data: listProducts
-        })
-        return;
-      }
-      const data = await Product.find({rating: { $gte: 3,},}).sort({ rating: -1 }).limit(5);
-      res.status(200).json({
-        status: 200,
-        msg: "Thành công",
-        data: data
-      })
-    } else {
-      res.status(200).json({
-        status: 200,
-        msg: "Thành công",
-        data: []
-      })  
-    }
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-}
-
 const getProductsNew = async (req, res, next) => {
   try {
     const data = await productService.getProductsNew();
@@ -215,65 +172,6 @@ const countProductSale = async (req, res, next) => {
   }
 };
 
-const getProductHot = async (req, res, next) => {
-  try {
-    const listBillProduct = await Billproduct.find();
-    if (!listBillProduct) throw new HttpError("Lỗi", 400);
-    const productBill = [];
-    listBillProduct.map((item) => {
-      let i;
-      if (
-        productBill.find((item1, index1) => {
-          i = index1;
-          return (
-            JSON.stringify(item1.productId) === JSON.stringify(item.productId)
-          );
-        })
-      ) {
-        productBill[i].quantity += item.quantity;
-      } else {
-        productBill.push(item);
-      }
-    });
-    const productHot = await Product.aggregate([
-      {
-        $match: {
-          _id: mongo.Types.ObjectId(
-            productBill.sort(
-              (item1, item2) => item2.quantity - item1.quantity
-            )[0].productId
-          ),
-        },
-      },
-      {
-        $lookup: {
-          from: "category",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      {
-        $project: {
-          __v: 0,
-          status: 0,
-          createdAt: 0,
-        },
-      },
-    ]).sort({ updatedAt: -1 });
-    productHot[0].quantitySale = productBill.sort(
-      (item1, item2) => item2.quantity - item1.quantity
-    )[0].quantity;
-    res.status(200).json({
-      status: 200,
-      msg: "Thành công",
-      data: productHot[0],
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const productController = {
   createProduct,
   getProduct,
@@ -284,6 +182,4 @@ export const productController = {
   getProductsNew,
   countProduct,
   countProductSale,
-  getProductHot,
-  getProductsRS,
 };
