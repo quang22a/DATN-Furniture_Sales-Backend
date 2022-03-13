@@ -16,7 +16,7 @@ export const socketServer = (io) => {
     });
 
     io.on("disconnect", (reason) => {
-      console.log("disconnected", reason);
+      console.log("disconnected: ", reason);
     });
   });
 };
