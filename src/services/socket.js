@@ -15,8 +15,8 @@ export const socketServer = (io) => {
       io.emit("server-notification-new-bill", countBillNew);
     });
 
-    io.on("disconnect", (reason) => {
-      console.log("disconnected: ", reason);
-    });
+    // io.on("disconnect", (reason) => {
+    //   console.log("disconnected: ", reason);
+    // });
   });
 };
