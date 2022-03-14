@@ -1,0 +1,27 @@
+import { Schema, model } from "mongoose";
+
+const CodeSchema = new Schema(
+  {
+    code: {
+      type: String,
+      required: true,
+    },
+    accountId: {
+      type: Schema.Types.ObjectId,
+      ref: "account",
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+
+    expireAt: {
+      type: Date,
+      default: Date.now,
+      createIndexes: { expires: "10m" },
+    },
+  },
+  { timestamps: true }
+);
+
+export const Code = model("code", CodeSchema, "code");
