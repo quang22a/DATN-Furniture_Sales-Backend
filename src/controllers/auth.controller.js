@@ -78,10 +78,16 @@ const login = async (req, res, next) => {
     let image;
     if (role == "staff") {
       const info = await Staff.findOne({ accountId });
+      if (!info.isActive) {
+        throw new HttpError("Tài khoản của bạn đã bị khóa", 401);
+      }
       name = info.name;
       image = info.image;
     } else if (role == "customer") {
       const info = await Customer.findOne({ accountId });
+      if (!info.isActive) {
+        throw new HttpError("Tài khoản của bạn đã bị khóa", 401);
+      }
       name = info.name;
       image = info.image;
     }

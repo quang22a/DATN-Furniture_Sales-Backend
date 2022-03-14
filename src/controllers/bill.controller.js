@@ -124,7 +124,7 @@ const getBillFollowTime  = async (req, res, next) => {
     }
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 999);
-    const listBill = await Bill.find({status: 'done', updatedAt: {
+    const listBill = await Bill.find({status: 'done', createdAt: {
       $gte: start,
       $lte: end,
     },});
