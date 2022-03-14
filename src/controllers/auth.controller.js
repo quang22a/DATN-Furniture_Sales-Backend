@@ -161,7 +161,13 @@ const updateProfile = async (req, res, next) => {
     user = await staffService.getStaff(_id);
   }
   if (!user) throw new HttpError("user not found", 400);
-
+  const userPhone = await authService.getAccount({ phone:  req.body.phone });
+  if (userPhone) {
+    throw new HttpError(
+      "Số điện thoại này đã được sử dụng cho tài khoản khác!",
+      400
+    );
+  }
   if (role == "customer") {
     await customerService.update(_id, req.body);
   } else if (role == "staff") {

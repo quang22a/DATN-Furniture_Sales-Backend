@@ -1,9 +1,10 @@
 import mongo from "mongoose";
 import { HttpError } from "../utils";
-import { CustomerService } from "../services";
+import { CustomerService, AuthThenticationService } from "../services";
 import { Customer } from "../models";
 
 const customerService = new CustomerService();
+const authService = new AuthThenticationService();
 
 const getCustomers = async (req, res, next) => {
   const { page, take, search } = req.query;
@@ -57,6 +58,13 @@ const updateCustomer = async (req, res, next) => {
   try {
     if (!mongo.Types.ObjectId.isValid(id))
       throw new HttpError("Id không chính xác", 401);
+    const user = await authService.getAccount({ phone: data.phone });
+    if (user) {
+      throw new HttpError(
+        "Số điện thoại này đã được sử dụng cho tài khoản khác!",
+        400
+      );
+    }
     if (!(await customerService.updateCustomer(id, data)))
       throw new HttpError("Không  tìm thấy người dùng", 400);
     res.status(200).json({

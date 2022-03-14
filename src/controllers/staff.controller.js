@@ -57,6 +57,13 @@ const updateStaff = async (req, res, next) => {
   try {
     if (!mongo.Types.ObjectId.isValid(id))
       throw new HttpError("Id incorrect", 401);
+      const user = await authService.getAccount({ phone: data.phone });
+      if (user) {
+        throw new HttpError(
+          "Số điện thoại này đã được sử dụng cho tài khoản khác!",
+          400
+        );
+      }
     if (!(await staffService.updateStaff(id, data)))
       throw new HttpError("Customer not found", 400);
     res.status(200).json({
