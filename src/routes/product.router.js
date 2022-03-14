@@ -48,3 +48,7 @@ productRouter
 productRouter
   .route("/api/v1/products/:productId")
   .delete(jwtMidleware, productController.deleteProduct);
+
+productRouter
+  .route("/api/v1/products-hot")
+  .get(productController.getProductHot);

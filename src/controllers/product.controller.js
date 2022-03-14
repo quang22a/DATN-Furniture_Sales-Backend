@@ -172,6 +172,65 @@ const countProductSale = async (req, res, next) => {
   }
 };
 
+const getProductHot = async (req, res, next) => {
+  try {
+    const listBillProduct = await Billproduct.find();
+    if (!listBillProduct) throw new HttpError("Lỗi", 400);
+    const productBill = [];
+    listBillProduct.map((item) => {
+      let i;
+      if (
+        productBill.find((item1, index1) => {
+          i = index1;
+          return (
+            JSON.stringify(item1.productId) === JSON.stringify(item.productId)
+          );
+        })
+      ) {
+        productBill[i].quantity += item.quantity;
+      } else {
+        productBill.push(item);
+      }
+    });
+    const productHot = await Product.aggregate([
+      {
+        $match: {
+          _id: mongo.Types.ObjectId(
+            productBill.sort(
+              (item1, item2) => item2.quantity - item1.quantity
+            )[0].productId
+          ),
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $project: {
+          __v: 0,
+          status: 0,
+          createdAt: 0,
+        },
+      },
+    ]).sort({ updatedAt: -1 });
+    productHot[0].quantitySale = productBill.sort(
+      (item1, item2) => item2.quantity - item1.quantity
+    )[0].quantity;
+    res.status(200).json({
+      status: 200,
+      msg: "Thành công",
+      data: productHot[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const productController = {
   createProduct,
   getProduct,
@@ -182,4 +241,5 @@ export const productController = {
   getProductsNew,
   countProduct,
   countProductSale,
+  getProductHot,
 };
