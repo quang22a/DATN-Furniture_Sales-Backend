@@ -1,8 +1,8 @@
-import mongo from "mongoose";
-import { checkout } from "superagent";
+import mongo from 'mongoose';
+import { checkout } from 'superagent';
 
-import { Bill, Billproduct, Product } from "../models";
-import { pagination } from "../utils";
+import { Bill, Billproduct, Product } from '../models';
+import { pagination } from '../utils';
 
 export default class BillService {
   async createBill(data) {
@@ -34,7 +34,10 @@ export default class BillService {
       additional,
     });
     listProducts.map(async (item) => {
-      await Product.findOneAndUpdate({ _id: mongo.Types.ObjectId(item.productId) }, { $inc: { quantity: - item.quantity } });
+      await Product.findOneAndUpdate(
+        { _id: mongo.Types.ObjectId(item.productId) },
+        { $inc: { quantity: -item.quantity } }
+      );
     });
     const listProductsWithBillId = listProducts.map((item) => {
       return {
@@ -55,16 +58,16 @@ export default class BillService {
       },
       {
         $lookup: {
-          from: "product",
-          localField: "productId",
-          foreignField: "_id",
-          as: "product",
+          from: 'product',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'product',
         },
       },
       {
         $project: {
           __v: 0,
-          "product.__v": 0,
+          'product.__v': 0,
         },
       },
     ]).sort({ updatedAt: -1 });
@@ -79,7 +82,7 @@ export default class BillService {
 
   async getBills(page, take, search) {
     const condition = {};
-    if (search) condition["name"] = new RegExp(search, "i");
+    if (search) condition['name'] = new RegExp(search, 'i');
     return await pagination(Bill, condition, page, take);
   }
 
@@ -98,7 +101,7 @@ export default class BillService {
       {
         $project: {
           __v: 0,
-          "product.__v": 0,
+          'product.__v': 0,
         },
       },
     ]).sort({ updatedAt: -1 });
@@ -113,7 +116,7 @@ export default class BillService {
         {
           $project: {
             __v: 0,
-            "product.__v": 0,
+            'product.__v': 0,
           },
         },
       ]).sort({ createdAt: -1 });
@@ -128,35 +131,35 @@ export default class BillService {
   async getBillFollowTime(listBill) {
     const idBills = listBill.map((item) => item._id);
     const data = await Billproduct.aggregate([
-        {
-          $match: {
-            billId: { "$in": idBills },
-          },
+      {
+        $match: {
+          billId: { $in: idBills },
         },
-        {
-          $lookup: {
-            from: "product",
-            localField: "productId",
-            foreignField: "_id",
-            as: "product",
-          },
+      },
+      {
+        $lookup: {
+          from: 'product',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'product',
         },
-        {
-          $lookup: {
-            from: "bill",
-            localField: "billId",
-            foreignField: "_id",
-            as: "bill",
-          },
+      },
+      {
+        $lookup: {
+          from: 'bill',
+          localField: 'billId',
+          foreignField: '_id',
+          as: 'bill',
         },
-        {
-          $project: {
-            __v: 0,
-            status: 0,
-            createdAt: 0,
-          },
+      },
+      {
+        $project: {
+          __v: 0,
+          status: 0,
+          createdAt: 0,
         },
-      ]).sort({ createdAt: -1 });
+      },
+    ]).sort({ createdAt: -1 });
     const result = [];
     data.map((item) => {
       let index = 0;
@@ -165,24 +168,31 @@ export default class BillService {
           index = index1;
         }
         return item1.productId.toString() === item.productId.toString();
-      })
+      });
       if (check.length > 0) {
         result[index].quantity += item.quantity;
         result[index].price += item.price;
       } else {
         result.push(item);
       }
-    })
+    });
     return result;
   }
 
   async deleteBill(_id) {
     const bill = await this.getBill(_id);
     if (!bill) return false;
+    const listProducts = await Billproduct.find({ billId: _id });
     await Promise.all([
       Bill.findByIdAndDelete({ _id }),
       Billproduct.deleteMany({ billId: _id }),
     ]);
+    listProducts.map(async (item) => {
+      await Product.findOneAndUpdate(
+        { _id: mongo.Types.ObjectId(item.productId) },
+        { $inc: { quantity: item.quantity } }
+      );
+    });
     return true;
   }
 }

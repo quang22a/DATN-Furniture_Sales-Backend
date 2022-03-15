@@ -79,14 +79,14 @@ const login = async (req, res, next) => {
     if (role == "staff") {
       const info = await Staff.findOne({ accountId });
       if (!info.isActive) {
-        throw new HttpError("Tài khoản của bạn đã bị khóa", 401);
+        throw new HttpError("Tài khoản của bạn đã bị khóa", 400);
       }
       name = info.name;
       image = info.image;
     } else if (role == "customer") {
       const info = await Customer.findOne({ accountId });
       if (!info.isActive) {
-        throw new HttpError("Tài khoản của bạn đã bị khóa", 401);
+        throw new HttpError("Tài khoản của bạn đã bị khóa", 400);
       }
       name = info.name;
       image = info.image;
@@ -155,28 +155,28 @@ const profile = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   const { role, _id } = req.user;
   let user = null;
-  if (role == "customer") {
-    user = await customerService.getCustomer(_id);
-  } else if (role == "staff") {
-    user = await staffService.getStaff(_id);
+  try {
+    if (role == "customer") {
+      user = await customerService.getCustomer(_id);
+    } else if (role == "staff") {
+      user = await staffService.getStaff(_id);
+    }
+    if (!user) throw new HttpError("user not found", 400);
+    const userPhone = await authService.getAccount({ phone:  req.body.phone });
+    console.log(userPhone)
+    if (userPhone) throw new HttpError( "Số điện thoại này đã được sử dụng cho tài khoản khác!", 400);
+    if (role == "customer") {
+      await customerService.update(_id, req.body);
+    } else if (role == "staff") {
+      await staffService.update(_id, req.body);
+    }
+    res.status(200).json({
+      status: 200,
+      msg: "Success",
+    });
+  } catch (error) {
+    next(error);
   }
-  if (!user) throw new HttpError("user not found", 400);
-  const userPhone = await authService.getAccount({ phone:  req.body.phone });
-  if (userPhone) {
-    throw new HttpError(
-      "Số điện thoại này đã được sử dụng cho tài khoản khác!",
-      400
-    );
-  }
-  if (role == "customer") {
-    await customerService.update(_id, req.body);
-  } else if (role == "staff") {
-    await staffService.update(_id, req.body);
-  }
-  res.status(200).json({
-    status: 200,
-    msg: "Success",
-  });
 };
 
 const requestResetPassword = async (req, res, next) => {

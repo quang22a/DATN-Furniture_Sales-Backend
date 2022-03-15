@@ -1,9 +1,10 @@
 import mongo from "mongoose";
 import { HttpError } from "../utils";
-import { StaffService } from "../services";
+import { StaffService, AuthThenticationService } from "../services";
 import { Staff } from "../models";
 
 const staffService = new StaffService();
+const authService = new AuthThenticationService();
 
 const getStaffs = async (req, res, next) => {
   const { page, take, search } = req.query;

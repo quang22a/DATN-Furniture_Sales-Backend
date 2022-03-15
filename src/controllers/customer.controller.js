@@ -55,6 +55,7 @@ const deleteCustomer = async (req, res, next) => {
 const updateCustomer = async (req, res, next) => {
   const { id } = req.params;
   const data = req.body;
+  console.log(data)
   try {
     if (!mongo.Types.ObjectId.isValid(id))
       throw new HttpError("Id không chính xác", 401);
