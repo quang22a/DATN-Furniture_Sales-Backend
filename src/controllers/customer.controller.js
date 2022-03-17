@@ -1,7 +1,7 @@
-import mongo from "mongoose";
-import { HttpError } from "../utils";
-import { CustomerService, AuthThenticationService } from "../services";
-import { Customer } from "../models";
+import mongo from 'mongoose';
+import { HttpError } from '../utils';
+import { CustomerService, AuthThenticationService } from '../services';
+import { Customer } from '../models';
 
 const customerService = new CustomerService();
 const authService = new AuthThenticationService();
@@ -12,7 +12,7 @@ const getCustomers = async (req, res, next) => {
     const data = await customerService.getCustomers(page, take, search);
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
       data,
     });
   } catch (error) {
@@ -27,7 +27,7 @@ const getCustomer = async (req, res, next) => {
     const data = await customerService.getCustomerById(id);
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
       data,
     });
   } catch (error) {
@@ -40,12 +40,12 @@ const deleteCustomer = async (req, res, next) => {
   const { id } = req.params;
   try {
     if (!mongo.Types.ObjectId.isValid(id))
-      throw new HttpError("Id incorrect", 401);
+      throw new HttpError('Id incorrect', 401);
     if (!(await customerService.deleteCustomer(id)))
-      throw new HttpError("Customer not found", 400);
+      throw new HttpError('Customer not found', 400);
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
     });
   } catch (error) {
     next(error);
@@ -55,22 +55,26 @@ const deleteCustomer = async (req, res, next) => {
 const updateCustomer = async (req, res, next) => {
   const { id } = req.params;
   const data = req.body;
-  console.log(data)
   try {
     if (!mongo.Types.ObjectId.isValid(id))
-      throw new HttpError("Id không chính xác", 401);
+      throw new HttpError('Id không chính xác', 401);
+    const customer = await customerService.getCustomerById(id);
+    if (!customer) throw new HttpError('Không tìm thấy người dùng', 401);
     const user = await authService.getAccount({ phone: data.phone });
-    if (user) {
+    if (
+      user &&
+      JSON.stringify(user._id) !== JSON.stringify(customer.accountId)
+    ) {
       throw new HttpError(
-        "Số điện thoại này đã được sử dụng cho tài khoản khác!",
+        'Số điện thoại này đã được sử dụng cho tài khoản khác!',
         400
       );
     }
     if (!(await customerService.updateCustomer(id, data)))
-      throw new HttpError("Không  tìm thấy người dùng", 400);
+      throw new HttpError('Không  tìm thấy người dùng', 400);
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
     });
   } catch (error) {
     next(error);
@@ -80,10 +84,10 @@ const updateCustomer = async (req, res, next) => {
 const countCustomer = async (req, res, next) => {
   try {
     const data = await Customer.countDocuments();
-    if (!data && data !== 0) throw new HttpError("Lỗi", 400);
+    if (!data && data !== 0) throw new HttpError('Lỗi', 400);
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
       data,
     });
   } catch (error) {

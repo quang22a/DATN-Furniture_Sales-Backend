@@ -1,5 +1,5 @@
-import { Staff, Account } from "../models";
-import { pagination } from "../utils";
+import { Staff, Account } from '../models';
+import { pagination } from '../utils';
 
 export default class StaffService {
   async getStaff(id) {
@@ -23,17 +23,14 @@ export default class StaffService {
     if (!(await this.getStaff(_id))) return false;
     await Promise.all([
       Staff.findOneAndUpdate({ accountId: _id }, data),
-      Account.findByIdAndUpdate(
-        { _id },
-        { email: data.email, phone: data.phone }
-      ),
+      Account.findByIdAndUpdate({ _id }, { phone: data.phone }),
     ]);
     return true;
   }
 
   async getStaffs(page, take, search) {
     const condition = {};
-    if (search) condition["name"] = new RegExp(search, "i");
+    if (search) condition['name'] = new RegExp(search, 'i');
     return await pagination(Staff, condition, page, take);
   }
 

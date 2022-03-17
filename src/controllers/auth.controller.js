@@ -1,12 +1,12 @@
-import { Account, Customer, Staff, Code } from "../models";
-import bcrypt from "bcryptjs";
-import { HttpError, tokenEncode, sendEmail, generate } from "../utils";
+import { Account, Customer, Staff, Code } from '../models';
+import bcrypt from 'bcryptjs';
+import { HttpError, tokenEncode, sendEmail, generate } from '../utils';
 import {
   AuthThenticationService,
   CustomerService,
   StaffService,
-} from "../services";
-import _ from "lodash";
+} from '../services';
+import _ from 'lodash';
 const authService = new AuthThenticationService();
 const staffService = new StaffService();
 const customerService = new CustomerService();
@@ -18,18 +18,18 @@ const registerStaff = async (req, res, next) => {
     const user = await authService.getAccount({ email });
     const user1 = await authService.getAccount({ phone });
     if (user) {
-      throw new HttpError("Email này đã được sử dụng cho tài khoản khác!", 400);
+      throw new HttpError('Email này đã được sử dụng cho tài khoản khác!', 400);
     }
     if (user1) {
       throw new HttpError(
-        "Số điện thoại này đã được sử dụng cho tài khoản khác!",
+        'Số điện thoại này đã được sử dụng cho tài khoản khác!',
         400
       );
     }
-    await authService.register(req.body, "staff");
+    await authService.register(req.body, 'staff');
     res.status(200).json({
       status: 200,
-      msg: "Sign up success",
+      msg: 'Sign up success',
     });
   } catch (error) {
     console.log(error);
@@ -44,19 +44,19 @@ const registerCustomer = async (req, res, next) => {
     const user = await authService.getAccount({ email });
     const user1 = await authService.getAccount({ phone });
     if (user) {
-      throw new HttpError("Email này đã được sử dụng cho tài khoản khác!", 400);
+      throw new HttpError('Email này đã được sử dụng cho tài khoản khác!', 400);
     }
     if (user1) {
       throw new HttpError(
-        "Số điện thoại này đã được sử dụng cho tài khoản khác!",
+        'Số điện thoại này đã được sử dụng cho tài khoản khác!',
         400
       );
     }
-    await authService.register(req.body, "customer");
+    await authService.register(req.body, 'customer');
 
     res.status(200).json({
       status: 200,
-      msg: "Sign up success",
+      msg: 'Sign up success',
     });
   } catch (error) {
     next(error);
@@ -68,25 +68,25 @@ const login = async (req, res, next) => {
   email = email.toLowerCase();
   try {
     const user = await authService.getAccount({ email });
-    if (!user) throw new HttpError("Tài khoản hoặc mật khẩu không đúng", 400);
+    if (!user) throw new HttpError('Tài khoản hoặc mật khẩu không đúng', 400);
     const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new HttpError("Tài khoản hoặc mật khẩu không đúng", 400);
+    if (!match) throw new HttpError('Tài khoản hoặc mật khẩu không đúng', 400);
 
     const role = user.role;
     let accountId = user._id;
     let name;
     let image;
-    if (role == "staff") {
+    if (role == 'staff') {
       const info = await Staff.findOne({ accountId });
       if (!info.isActive) {
-        throw new HttpError("Tài khoản của bạn đã bị khóa", 400);
+        throw new HttpError('Tài khoản của bạn đã bị khóa', 400);
       }
       name = info.name;
       image = info.image;
-    } else if (role == "customer") {
+    } else if (role == 'customer') {
       const info = await Customer.findOne({ accountId });
       if (!info.isActive) {
-        throw new HttpError("Tài khoản của bạn đã bị khóa", 400);
+        throw new HttpError('Tài khoản của bạn đã bị khóa', 400);
       }
       name = info.name;
       image = info.image;
@@ -102,7 +102,7 @@ const login = async (req, res, next) => {
     const token = tokenEncode(data);
     res.status(200).json({
       status: 200,
-      msg: "Đăng nhập thành công",
+      msg: 'Đăng nhập thành công',
       role: data.role,
       accessToken: token,
       name,
@@ -119,12 +119,12 @@ const updatePassword = async (req, res, next) => {
   const { _id } = req.user;
   try {
     let user = await authService.getAccount({ _id });
-    if (!user) throw new HttpError("Không tìm thấy người dùng", 400);
+    if (!user) throw new HttpError('Không tìm thấy người dùng', 400);
     if (!(await authService.updatePassword(_id, password, newPassword)))
-      throw new HttpError("Mật khẩu cũ không chính xác", 400);
+      throw new HttpError('Mật khẩu cũ không chính xác', 400);
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
     });
   } catch (error) {
     next(error);
@@ -135,16 +135,16 @@ const profile = async (req, res, next) => {
   const { role, _id } = req.user;
   try {
     let user = null;
-    if (role == "customer") {
+    if (role == 'customer') {
       user = await customerService.getCustomer(_id);
-    } else if (role == "staff") {
+    } else if (role == 'staff') {
       user = await staffService.getStaff(_id);
     }
-    if (!user) throw new HttpError("user not found", 400);
+    if (!user) throw new HttpError('user not found', 400);
 
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
       user,
     });
   } catch (error) {
@@ -156,23 +156,29 @@ const updateProfile = async (req, res, next) => {
   const { role, _id } = req.user;
   let user = null;
   try {
-    if (role == "customer") {
+    if (role == 'customer') {
       user = await customerService.getCustomer(_id);
-    } else if (role == "staff") {
+    } else if (role == 'staff') {
       user = await staffService.getStaff(_id);
     }
-    if (!user) throw new HttpError("user not found", 400);
-    const userPhone = await authService.getAccount({ phone:  req.body.phone });
-    console.log(userPhone)
-    if (userPhone) throw new HttpError( "Số điện thoại này đã được sử dụng cho tài khoản khác!", 400);
-    if (role == "customer") {
+    if (!user) throw new HttpError('user not found', 400);
+    const userPhone = await authService.getAccount({ phone: req.body.phone });
+    if (
+      userPhone &&
+      JSON.stringify(userPhone._id) !== JSON.stringify(user.accountId)
+    )
+      throw new HttpError(
+        'Số điện thoại này đã được sử dụng cho tài khoản khác!',
+        400
+      );
+    if (role == 'customer') {
       await customerService.update(_id, req.body);
-    } else if (role == "staff") {
+    } else if (role == 'staff') {
       await staffService.update(_id, req.body);
     }
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
     });
   } catch (error) {
     next(error);
@@ -183,7 +189,7 @@ const requestResetPassword = async (req, res, next) => {
   let { email } = req.body;
   try {
     const user = await Account.findOne({ email });
-    if (!user) throw new HttpError("Email này chưa được đăng ký", 400);
+    if (!user) throw new HttpError('Email này chưa được đăng ký', 400);
     const code = generate();
     await sendEmail(code, email);
     await Promise.all([
@@ -192,7 +198,7 @@ const requestResetPassword = async (req, res, next) => {
     ]);
     res.status(200).json({
       status: 200,
-      msg: "Mã xác nhận đã được gửi về email, vui lòng xác nhận trong vòng 5 phút",
+      msg: 'Mã xác nhận đã được gửi về email, vui lòng xác nhận trong vòng 5 phút',
     });
   } catch (error) {
     next(error);
@@ -205,10 +211,10 @@ const confirmCode = async (req, res, next) => {
     email = email.toLowerCase();
     const existCode = await Code.findOne({ email, code });
     if (!existCode)
-      throw new HttpError("Mã xác nhận của bạn không chính xác", 400);
+      throw new HttpError('Mã xác nhận của bạn không chính xác', 400);
     res.status(200).json({
       status: 200,
-      msg: "Success",
+      msg: 'Success',
     });
   } catch (error) {
     next(error);
@@ -220,7 +226,7 @@ const changePasswordReset = async (req, res, next) => {
   try {
     email = email.toLowerCase();
     const existCode = await Code.findOne({ email, code });
-    if (!existCode) throw new HttpError("Fail", 400);
+    if (!existCode) throw new HttpError('Fail', 400);
     const hash = await bcrypt.hash(password, 12);
     await Promise.all([
       Account.findByIdAndUpdate(
@@ -231,7 +237,7 @@ const changePasswordReset = async (req, res, next) => {
     ]);
     res.status(200).json({
       status: 200,
-      msg: "Mật khẩu đã được cập nhật",
+      msg: 'Mật khẩu đã được cập nhật',
     });
   } catch (error) {
     next(error);

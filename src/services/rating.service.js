@@ -1,7 +1,7 @@
-import mongo from "mongoose";
+import mongo from 'mongoose';
 
-import { Rating } from "../models";
-import { pagination } from "../utils";
+import { Rating } from '../models';
+import { pagination } from '../utils';
 
 export default class RatingService {
   async create(data) {
@@ -14,10 +14,10 @@ export default class RatingService {
       },
       {
         $lookup: {
-          from: "customer",
-          localField: "customerId",
-          foreignField: "_id",
-          as: "customer",
+          from: 'customer',
+          localField: 'customerId',
+          foreignField: '_id',
+          as: 'customer',
         },
       },
     ]);
@@ -42,10 +42,10 @@ export default class RatingService {
       },
       {
         $lookup: {
-          from: "customer",
-          localField: "customerId",
-          foreignField: "_id",
-          as: "customer",
+          from: 'customer',
+          localField: 'customerId',
+          foreignField: '_id',
+          as: 'customer',
         },
       },
       {
@@ -53,7 +53,7 @@ export default class RatingService {
           __v: 0,
         },
       },
-    ]);
+    ]).sort({ createdAt: -1 });
   }
 
   async deleteRating(_id) {
